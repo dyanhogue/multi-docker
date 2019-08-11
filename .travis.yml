@@ -3,33 +3,33 @@ services:
   - docker
 
 before_install:
-  - docker build -t ../react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t dyanhogue/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run ../react-test npm test -- --coverage
+  - docker run -e CI=true  dyanhogue/react-test npm test 
 
 after_success:
-  - docker build -t ../multi-client ./client
-  - docker build -t ../multi-nginx ./nginx
-  - docker build -t ../multi-server ./server
-  - docker build -t ../multi-worker ./worker
+  - docker build -t dyanhogue/multi-client ./client
+  - docker build -t dyanhogue/multi-nginx ./nginx
+  - docker build -t dyanhogue/multi-server ./server
+  - docker build -t dyanhogue/multi-worker ./worker
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # Take those images and push them to docker hub
-  - docker push ../multi-client
-  - docker push ../multi-nginx
-  - docker push ../multi-server
-  - docker push ../multi-worker
+  - docker push dyanhogue/multi-client
+  - docker push dyanhogue/multi-nginx
+  - docker push dyanhogue/multi-server
+  - docker push dyanhogue/multi-worker
 
-deploy:
-  provider: elasticbeanstalk
-  region: us-west-1
-  app: multi-docker
-  env: MultiDocker-env
-  bucket_name: elasticbeanstalk-us-west-1-306476627547
-  bucket_path: docker-multi
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key:
-    secure: $AWS_SECRET_KEY
+#deploy:
+#  provider: elasticbeanstalk
+#  region: us-west-1
+#  app: multi-docker
+#  env: MultiDocker-env
+#  bucket_name: elasticbeanstalk-us-west-1-306476627547
+#  bucket_path: docker-multi
+#  on:
+#    branch: master
+#  access_key_id: $AWS_ACCESS_KEY
+#  secret_access_key:
+#    secure: $AWS_SECRET_KEY
